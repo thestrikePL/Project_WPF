@@ -1,4 +1,8 @@
-﻿using System;
+﻿using Project_WPF.Access;
+using Project_WPF.Model;
+using Project_WPF.Service;
+using Project_WPF;
+using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text;
@@ -11,50 +15,73 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using System.Collections.ObjectModel;
-using System.Windows;
 
 namespace Project_WPF
 {
+    /// <summary>
+    /// Interaction logic for MainWindow.xaml
+    /// </summary>
     public partial class MainWindow : Window
     {
         private readonly NoteService _noteService;
-        public ObservableCollection<NoteDto> Notes { get; set; }
 
+        public ObservableCollection<NoteEntity> ObservableNotes { get; private set; }
         public MainWindow()
         {
             InitializeComponent();
-            _noteService = new NoteService("Data Source=notes.db;Version=3;");
-            LoadNotes();
+            string connectionString = "Data Source=LAPTOP-RAT220IN;Integrated Security=True";
+            AppDbContext appDbContext = new AppDbContext(connectionString);
+            ObservableNotes = new ObservableCollection<NoteEntity>();
+            Notes_ListView.ItemsSource = ObservableNotes;
+            _noteService = new NoteService(appDbContext);
+            UpdateNotes();
         }
 
-        private void LoadNotes()
+        private void CreateNote_Button_Click(object sender, RoutedEventArgs e)
         {
-            var notes = _noteService.GetAllNotes();
-            Notes = new ObservableCollection<NoteDto>(notes);
-            NotesList.ItemsSource = Notes;
+            CreateNewNoteWindow createNewNoteWindow = new CreateNewNoteWindow();
+            createNewNoteWindow.Activate();
+            createNewNoteWindow.Show();
+            createNewNoteWindow.Closing += CreateNoteEventHandler;
         }
 
-        private void CreateNewNote_Click(object sender, RoutedEventArgs e)
+        private void CreateNoteEventHandler(object sender, CancelEventArgs e)
         {
-            var createNoteWindow = new CreateNewNoteWindow(_noteService);
-            createNoteWindow.NoteCreated += CreateNoteWindow_NoteCreated;
-            createNoteWindow.ShowDialog();
+            CreateNewNoteWindow eventSender = (CreateNewNoteWindow)sender;
+            if (eventSender.IsNoteCreateRequest)
+            {
+                _noteService.CreateNote(new Dto.NoteDto(eventSender.NewNoteTitle,
+                    eventSender.NewNoteCategory,
+                    eventSender.NewNoteContent,
+                    eventSender.NewCreationDate,
+                    eventSender.NewModificationDate));
+                UpdateNotes();
+            }
         }
 
-        private void CreateNoteWindow_NoteCreated(object sender, NoteDto note)
+        private void UpdateNotes()
         {
-            Notes.Add(note);
+            ObservableNotes.Clear();
+            var existingNotes = _noteService.GetNotes();
+            foreach (var note in existingNotes)
+            {
+                ObservableNotes.Add(note);
+            }
         }
 
-        private void DeleteNote_Click(object sender, RoutedEventArgs e)
+        private void Notes_ListView_MouseDoubleClick(object sender, MouseButtonEventArgs e)
         {
-            // Logika usuwania notatki
+            NoteEntity selectedPerson = (NoteEntity)Notes_ListView.SelectedItem;
+
+            ReadNoteWindow readNoteWindow = new ReadNoteWindow(selectedPerson);
+            readNoteWindow.Activate();
+            readNoteWindow.Show();
+            readNoteWindow.Closing += ReadNoteEventHandler;
         }
 
-        private void EditNote_Click(object sender, RoutedEventArgs e)
+        private void ReadNoteEventHandler(object sender, CancelEventArgs e)
         {
-            // Logika edytowania notatki
+            UpdateNotes();
         }
     }
 }

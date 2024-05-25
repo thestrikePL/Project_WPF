@@ -11,51 +11,39 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System;
-using System.Windows;
+
 namespace Project_WPF
 {
     /// <summary>
-    /// Logika interakcji dla klasy UpdateNoteWindow.xaml
+    /// Interaction logic for UpdateNoteWindow.xaml
     /// </summary>
     public partial class UpdateNoteWindow : Window
     {
+        public string UpdateNoteTitle { get; set; }
+        public string UpdateNoteCategory { get; set; }
+        public string UpdateNoteContent { get; set; }
+        public string UpdateCreationDate { get; set; }
+        public string UpdateModificationDate { get; set; }
         public UpdateNoteWindow()
         {
             InitializeComponent();
         }
-    }
-}
 
-
-namespace Project_WPF
-{
-    public partial class UpdateNoteWindow : Window
-    {
-        private readonly NoteDto _note;
-
-        public UpdateNoteWindow(NoteDto note)
+        private void Save_Click(object sender, RoutedEventArgs e)
         {
-            InitializeComponent();
-            _note = note;
-            TitleTextBox.Text = note.Title;
-            ContentTextBox.Text = note.Content;
-        }
+            string sqlTimeAsString = DateTime.Now.ToString("yyyy-MM-ddTHH:mm:ss.fff");
 
-        private void Update_Click(object sender, RoutedEventArgs e)
-        {
-            _note.Title = TitleTextBox.Text;
-            _note.Content = ContentTextBox.Text;
-            _note.ModificationDate = DateTime.Now;
-
-            // Implementacja logiki aktualizacji notatki w bazie danych
-
-            Close();
+            UpdateNoteTitle = UpdateNoteTitle_TextBox.Text;
+            UpdateNoteCategory = UpdateNoteCategory_TextBox.Text;
+            UpdateNoteContent = UpdateNoteContent_TextBox.Text;
+            UpdateModificationDate = sqlTimeAsString;
+            UpdateCreationDate = UpdateCreationDate;
+            this.Close();
         }
 
         private void Cancel_Click(object sender, RoutedEventArgs e)
         {
-            Close();
+            this.Close();
         }
     }
 }

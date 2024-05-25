@@ -1,45 +1,52 @@
-﻿using System;
+﻿using Project_WPF.Access;
+using Project_WPF.Dto;
+using Project_WPF.Model;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.NetworkInformation;
 using System.Text;
 using System.Threading.Tasks;
-using Dapper;
-using System.Collections.Generic;
-using System.Data.SQLite;
-using System.Linq;
+using System.Windows.Controls.Primitives;
+using Project_WPF.Access;
+using Project_WPF.Dto;
+using Project_WPF.Model;
 
 namespace Project_WPF.Service
 {
-    internal class NoteService
+    public class NoteService
     {
-    }
-}
+        private readonly AppDbContext _appDbContext;
 
-public class NoteService
-{
-    private readonly string _connectionString;
-
-    public NoteService(string connectionString)
-    {
-        _connectionString = connectionString;
-    }
-
-    public IEnumerable<NoteDto> GetAllNotes()
-    {
-        using (var connection = new SQLiteConnection(_connectionString))
+        public NoteService(AppDbContext appDbContext)
         {
-            return connection.Query<NoteDto>("SELECT * FROM Notes").ToList();
+            _appDbContext = appDbContext;
+        }
+
+        public IEnumerable<NoteEntity> GetNotes()
+        {
+            var query = "SELECT * FROM Notes;";
+            return _appDbContext.GetFromDatabase<NoteEntity>(query);
+        }
+
+        public void CreateNote(NoteDto noteDto)
+        {
+            _appDbContext.CreateNewNote(noteDto);
+        }
+
+        public IEnumerable<NoteEntity> ReadNote(int id)
+        {
+            var query = "SELECT * FROM Notes WHERE id = @id";
+            return _appDbContext.GetFromDatabase<NoteEntity>(query);
+        }
+
+        public void UpdateNote(NoteDto noteDto)
+        {
+            _appDbContext.UpdateNote(noteDto);
+        }
+
+        public void DeleteNote(NoteDto noteDto)
+        {
+            _appDbContext.DeleteNote(noteDto);
         }
     }
-
-    public void AddNote(NoteDto note)
-    {
-        using (var connection = new SQLiteConnection(_connectionString))
-        {
-            connection.Execute("INSERT INTO Notes (Title, Content, Category, CreationDate, ModificationDate) VALUES (@Title, @Content, @Category, @CreationDate, @ModificationDate)", note);
-        }
-    }
-
-    // Inne metody (Update, Delete)...
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Project_WPF.EventSenders
 {
-    internal class DataSentEventArgs
+    public class DataSentEventArgs
     {
     }
 }
