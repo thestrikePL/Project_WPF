@@ -30,9 +30,7 @@
             <Button x:Name="Cancel" Content="Cancel" Margin="10" Click="Cancel_Click"
                     Background="#FF1976D2" Foreground="White" FontWeight="Bold" Padding="10,5" 
                     BorderBrush="#FF1565C0" BorderThickness="2" />
-            <Button x:Name="Update" Content="Update" Margin="10" Click="Update_Click"
-                    Background="#FF1976D2" Foreground="White" FontWeight="Bold" Padding="10,5" 
-                    BorderBrush="#FF1565C0" BorderThickness="2" />
+            
         </StackPanel>
     </Grid>
 </Window>

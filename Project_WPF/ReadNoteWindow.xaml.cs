@@ -21,11 +21,6 @@ using System.Windows.Shapes;
 namespace Project_WPF
 {
 
-    /// <summary>
-    /// Interaction logic for ReadNoteWindow.xaml
-    /// </summary>
-
-
     public partial class ReadNoteWindow : Window
     {
         private readonly NoteService _noteService;
@@ -41,23 +36,8 @@ namespace Project_WPF
             this.Close();
         }
 
-        private void Update_Click(object sender, RoutedEventArgs e)
-        {
-            UpdateNoteWindow updateNewNoteWindow = new UpdateNoteWindow();
-            updateNewNoteWindow.Activate();
-            updateNewNoteWindow.Show();
-            updateNewNoteWindow.Closing += UpdateNoteEventHandler;
-        }
-
-        private void UpdateNoteEventHandler(object? sender, CancelEventArgs e)
-        {
-            UpdateNoteWindow eventSender = (UpdateNoteWindow)sender;
-            _noteService.UpdateNote(new Dto.NoteDto(eventSender.UpdateNoteTitle,
-                eventSender.UpdateNoteCategory,
-                eventSender.UpdateNoteContent,
-                eventSender.UpdateCreationDate,
-                eventSender.UpdateModificationDate));
-            this.Close();
-        }
     }
+
+
 }
+
